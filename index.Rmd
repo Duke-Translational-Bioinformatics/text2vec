@@ -6,17 +6,17 @@ output:
     toc: false
     toc_float: false
 ---
-You just discovered **[text2vec](https://github.com/dselivanov/text2vec)**!
+You've just discovered **[text2vec](https://github.com/dselivanov/text2vec)**!
 
 **text2vec** is an R package which provides an efficient framework with a concise API for text analysis and natural language processing (NLP). 
 
-Goals which we aimed during the development of `text2vec`:
+Goals which we aimed to achieve as a result of development of `text2vec`:
 
-* **Consise** - expose as few functions as possible
-* **Consistent** - expose unified interfaces, no need to learn new interface for each task
-* **Flexible** - allow to easlily solve complex tasks
+* **Concise** - expose as few functions as possible
+* **Consistent** - expose unified interfaces, no need to explore new interface for each task
+* **Flexible** - allow to easily solve complex tasks
 * **Fast** - maximize efficiency per single thread, transparently scale to multiple threads on multicore machines
-* **Memory efficient** - use streams and iterators, don't keep data in RAM if possible
+* **Memory efficient** - use streams and iterators, not keep data in RAM if possible
 
 See [API](api.html) section for details.
 
@@ -28,4 +28,4 @@ This package is efficient because it is carefully written in C++, which also mea
 Other emrassingly parallel tasks such as vectorization can use any parallel backend wich supports [foreach](https://cran.r-project.org/web/packages/foreach/index.html) package. So they can achieve near-linear scalability with number of available cores. 
 Finally, a streaming API means that  users do not have to load all the data into RAM. 
 
-<img src="images/htop.png" id="lead-logo" class="pull-right"/>
+<img src="images/htop.png" id="htop" class="pull-right"/>
