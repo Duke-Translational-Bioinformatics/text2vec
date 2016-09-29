@@ -10,9 +10,10 @@ set.seed(2016L)
 
 
 # Latent Semantic Analysis
+TODO
 
 # Latent Dirichlet Allocation
-
+TODO
 ```{r}
 library(text2vec)
 data("movie_review")
@@ -26,13 +27,12 @@ v = create_vocabulary(it) %>%
 vectorizer = vocab_vectorizer(v)
 dtm = create_dtm(it, vectorizer, type = "lda_c")
 
-lda_model = LDA$new(n_topics = 10, 
-                    vocabulary = v, 
-                    doc_topic_prior = 0.1, 
-                    topic_word_prior = 0.01)
-doc_topic_distr = lda_model$fit_transform(dtm, n_iter = 100, 
-                                          convergence_tol = 0.01, 
-                                          check_convergence_every_n = 10)
+lda_model = 
+  LDA$new(n_topics = 10, vocabulary = v, 
+          doc_topic_prior = 0.1, topic_word_prior = 0.01)
+doc_topic_distr = 
+  lda_model$fit_transform(dtm, n_iter = 100, convergence_tol = 0.01, 
+                          check_convergence_every_n = 10)
 ```
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}

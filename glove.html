@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-09-26" />
+<meta name="date" content="2016-09-29" />
 
 <title>GloVe Word Embeddings</title>
 
@@ -306,6 +306,9 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
   <a href="vectorization.html">Vectorization</a>
 </li>
 <li>
@@ -315,13 +318,22 @@ div.tocify {
   <a href="topic_modeling.html">Topic modeling</a>
 </li>
 <li>
-  <a href="distances.html">Document distances</a>
+  <a href="distances.html">Distances</a>
+</li>
+<li>
+  <a href="api.html">API</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dselivanov/text2vec">
     <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://stackoverflow.com/questions/tagged/text2vec">
+    <span class="fa fa-stack-overflow"></span>
      
   </a>
 </li>
@@ -336,7 +348,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">GloVe Word Embeddings</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-09-26</em></h4>
+<h4 class="date"><em>2016-09-29</em></h4>
 
 </div>
 
@@ -346,8 +358,8 @@ div.tocify {
 <p>After Tomas Mikolov et al. released the <a href="https://code.google.com/p/word2vec/">word2vec</a> tool, there was a boom of articles about word vector representations. One of the best of these articles is Stanford’s <a href="http://nlp.stanford.edu/projects/glove/">GloVe: Global Vectors for Word Representation</a>, which explained why such algorithms work and reformulated word2vec optimizations as a special kind of factoriazation for word co-occurence matrices.</p>
 <p>Here I will briefly introduce the GloVe algorithm and show how to use its text2vec implementation.</p>
 </div>
-<div id="introduction-to-the-glove-algorithm" class="section level1">
-<h1>Introduction to the GloVe algorithm</h1>
+<div id="glove-algorithm" class="section level1">
+<h1>GloVe algorithm</h1>
 <p>THe GloVe algorithm consists of following steps:</p>
 <ol style="list-style-type: decimal">
 <li><p>Collect word cooccurence statistics in a form of word co-ocurrence matrix <span class="math inline">\(X\)</span>. Each element <span class="math inline">\(X_{ij}\)</span> of such matrix represents how often word <em>i</em> appears in context of word <em>j</em>. Usually we scan our corpus in the following manner: for each term we look for context terms within some area defined by a <em>window_size</em> before the term and a <em>window_size</em> after the term. Also we give less weight for more distant words, usually using this formula: <span class="math display">\[decay = 1/offset\]</span></p></li>
@@ -362,8 +374,8 @@ f(X_{ij}) =
 \end{cases}
 \]</span></p>
 </div>
-<div id="canonical-example-linguistic-regularities" class="section level1">
-<h1>Canonical example: linguistic regularities</h1>
+<div id="linguistic-regularities" class="section level1">
+<h1>Linguistic regularities</h1>
 <p>Now let’s examine how GloVe embeddings works. As commonly known, word2vec word vectors capture many linguistic regularities. To give the canonical example, if we take word vectors for the words “paris,” “france,” and “germany” and perform the following operation:</p>
 <p><span class="math display">\[vector(&quot;paris&quot;) - vector(&quot;france&quot;) + vector(&quot;germany&quot;)\]</span></p>
 <p>the resulting vector will be close to the vector for “rome.”</p>
@@ -395,29 +407,27 @@ tcm &lt;-<span class="st"> </span><span class="kw">create_tcm</span>(it, vectori
 text2vec uses a parallel stochastic gradient descent algorithm. By default it will use all cores on your machine, but you can specify the number of cores if you wish. For example, to use 4 threads call <code>RcppParallel::setThreadOptions(numThreads = 4)</code>.</p>
 <p>Let’s fit our model. (It can take several minutes to fit!)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glove =<span class="st"> </span>GlobalVectors$<span class="kw">new</span>(<span class="dt">word_vectors_size =</span> <span class="dv">50</span>, <span class="dt">vocabulary =</span> vocab, <span class="dt">x_max =</span> <span class="dv">10</span>)
-glove$<span class="kw">fit</span>(tcm, <span class="dt">n_iter =</span> <span class="dv">20</span>)</code></pre></div>
-<blockquote>
-<p>2016-09-16 13:38:52 - epoch 1, expected cost 0.0897<br />
-2016-09-16 13:38:55 - epoch 2, expected cost 0.0607<br />
-2016-09-16 13:38:57 - epoch 3, expected cost 0.0542<br />
-2016-09-16 13:39:00 - epoch 4, expected cost 0.0502<br />
-2016-09-16 13:39:03 - epoch 5, expected cost 0.0477<br />
-2016-09-16 13:39:05 - epoch 6, expected cost 0.0457<br />
-2016-09-16 13:39:08 - epoch 7, expected cost 0.0443<br />
-2016-09-16 13:39:10 - epoch 8, expected cost 0.0433<br />
-2016-09-16 13:39:13 - epoch 9, expected cost 0.0424<br />
-2016-09-16 13:39:16 - epoch 10, expected cost 0.0416<br />
-2016-09-16 13:39:18 - epoch 11, expected cost 0.0411<br />
-2016-09-16 13:39:21 - epoch 12, expected cost 0.0404<br />
-2016-09-16 13:39:23 - epoch 13, expected cost 0.0400<br />
-2016-09-16 13:39:26 - epoch 14, expected cost 0.0396<br />
-2016-09-16 13:39:29 - epoch 15, expected cost 0.0392<br />
-2016-09-16 13:39:31 - epoch 16, expected cost 0.0389<br />
-2016-09-16 13:39:34 - epoch 17, expected cost 0.0386<br />
-2016-09-16 13:39:37 - epoch 18, expected cost 0.0383<br />
-2016-09-16 13:39:39 - epoch 19, expected cost 0.0380<br />
-2016-09-16 13:39:42 - epoch 20, expected cost 0.0379</p>
-</blockquote>
+glove$<span class="kw">fit</span>(tcm, <span class="dt">n_iter =</span> <span class="dv">20</span>)
+<span class="co"># 2016-09-16 13:38:52 - epoch 1, expected cost 0.0897  </span>
+<span class="co"># 2016-09-16 13:38:55 - epoch 2, expected cost 0.0607  </span>
+<span class="co"># 2016-09-16 13:38:57 - epoch 3, expected cost 0.0542  </span>
+<span class="co"># 2016-09-16 13:39:00 - epoch 4, expected cost 0.0502  </span>
+<span class="co"># 2016-09-16 13:39:03 - epoch 5, expected cost 0.0477  </span>
+<span class="co"># 2016-09-16 13:39:05 - epoch 6, expected cost 0.0457  </span>
+<span class="co"># 2016-09-16 13:39:08 - epoch 7, expected cost 0.0443  </span>
+<span class="co"># 2016-09-16 13:39:10 - epoch 8, expected cost 0.0433  </span>
+<span class="co"># 2016-09-16 13:39:13 - epoch 9, expected cost 0.0424  </span>
+<span class="co"># 2016-09-16 13:39:16 - epoch 10, expected cost 0.0416  </span>
+<span class="co"># 2016-09-16 13:39:18 - epoch 11, expected cost 0.0411  </span>
+<span class="co"># 2016-09-16 13:39:21 - epoch 12, expected cost 0.0404  </span>
+<span class="co"># 2016-09-16 13:39:23 - epoch 13, expected cost 0.0400  </span>
+<span class="co"># 2016-09-16 13:39:26 - epoch 14, expected cost 0.0396  </span>
+<span class="co"># 2016-09-16 13:39:29 - epoch 15, expected cost 0.0392  </span>
+<span class="co"># 2016-09-16 13:39:31 - epoch 16, expected cost 0.0389  </span>
+<span class="co"># 2016-09-16 13:39:34 - epoch 17, expected cost 0.0386  </span>
+<span class="co"># 2016-09-16 13:39:37 - epoch 18, expected cost 0.0383  </span>
+<span class="co"># 2016-09-16 13:39:39 - epoch 19, expected cost 0.0380  </span>
+<span class="co"># 2016-09-16 13:39:42 - epoch 20, expected cost 0.0379  </span></code></pre></div>
 <p>Alternatively we can train model with R’s <code>S3</code> interface (but keep in mind that all text2vec models are R6 classes and they are mutable! So <code>fit</code>, <code>fit_transform</code> methods modify models!):</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">glove =<span class="st"> </span>GlobalVectors$<span class="kw">new</span>(<span class="dt">word_vectors_size =</span> <span class="dv">50</span>, <span class="dt">vocabulary =</span> vocab, <span class="dt">x_max =</span> <span class="dv">10</span>)
 <span class="co"># `glove` object will be modified by `fit()` call !</span>

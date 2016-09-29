@@ -12,7 +12,7 @@ After Tomas Mikolov et al. released the [word2vec](https://code.google.com/p/wor
 
 Here I will briefly introduce the GloVe algorithm and show how to use its text2vec implementation.
 
-# Introduction to the GloVe algorithm
+# GloVe algorithm
 
 THe GloVe algorithm consists of following steps:
 
@@ -32,7 +32,7 @@ f(X_{ij}) =
 \end{cases}
 $$
 
-# Canonical example: linguistic regularities
+# Linguistic regularities
 
 Now let's examine how GloVe embeddings works. As commonly known, word2vec word vectors capture many linguistic regularities. To give the canonical example, if we take word vectors for the words "paris," "france," and "germany" and perform the following operation: 
 
@@ -88,29 +88,27 @@ Let's fit our model. (It can take several minutes to fit!)
 ```{r, message=TRUE}
 glove = GlobalVectors$new(word_vectors_size = 50, vocabulary = vocab, x_max = 10)
 glove$fit(tcm, n_iter = 20)
+# 2016-09-16 13:38:52 - epoch 1, expected cost 0.0897  
+# 2016-09-16 13:38:55 - epoch 2, expected cost 0.0607  
+# 2016-09-16 13:38:57 - epoch 3, expected cost 0.0542  
+# 2016-09-16 13:39:00 - epoch 4, expected cost 0.0502  
+# 2016-09-16 13:39:03 - epoch 5, expected cost 0.0477  
+# 2016-09-16 13:39:05 - epoch 6, expected cost 0.0457  
+# 2016-09-16 13:39:08 - epoch 7, expected cost 0.0443  
+# 2016-09-16 13:39:10 - epoch 8, expected cost 0.0433  
+# 2016-09-16 13:39:13 - epoch 9, expected cost 0.0424  
+# 2016-09-16 13:39:16 - epoch 10, expected cost 0.0416  
+# 2016-09-16 13:39:18 - epoch 11, expected cost 0.0411  
+# 2016-09-16 13:39:21 - epoch 12, expected cost 0.0404  
+# 2016-09-16 13:39:23 - epoch 13, expected cost 0.0400  
+# 2016-09-16 13:39:26 - epoch 14, expected cost 0.0396  
+# 2016-09-16 13:39:29 - epoch 15, expected cost 0.0392  
+# 2016-09-16 13:39:31 - epoch 16, expected cost 0.0389  
+# 2016-09-16 13:39:34 - epoch 17, expected cost 0.0386  
+# 2016-09-16 13:39:37 - epoch 18, expected cost 0.0383  
+# 2016-09-16 13:39:39 - epoch 19, expected cost 0.0380  
+# 2016-09-16 13:39:42 - epoch 20, expected cost 0.0379  
 ```
-
-> 
-2016-09-16 13:38:52 - epoch 1, expected cost 0.0897  
-2016-09-16 13:38:55 - epoch 2, expected cost 0.0607  
-2016-09-16 13:38:57 - epoch 3, expected cost 0.0542  
-2016-09-16 13:39:00 - epoch 4, expected cost 0.0502  
-2016-09-16 13:39:03 - epoch 5, expected cost 0.0477  
-2016-09-16 13:39:05 - epoch 6, expected cost 0.0457  
-2016-09-16 13:39:08 - epoch 7, expected cost 0.0443  
-2016-09-16 13:39:10 - epoch 8, expected cost 0.0433  
-2016-09-16 13:39:13 - epoch 9, expected cost 0.0424  
-2016-09-16 13:39:16 - epoch 10, expected cost 0.0416  
-2016-09-16 13:39:18 - epoch 11, expected cost 0.0411  
-2016-09-16 13:39:21 - epoch 12, expected cost 0.0404  
-2016-09-16 13:39:23 - epoch 13, expected cost 0.0400  
-2016-09-16 13:39:26 - epoch 14, expected cost 0.0396  
-2016-09-16 13:39:29 - epoch 15, expected cost 0.0392  
-2016-09-16 13:39:31 - epoch 16, expected cost 0.0389  
-2016-09-16 13:39:34 - epoch 17, expected cost 0.0386  
-2016-09-16 13:39:37 - epoch 18, expected cost 0.0383  
-2016-09-16 13:39:39 - epoch 19, expected cost 0.0380  
-2016-09-16 13:39:42 - epoch 20, expected cost 0.0379  
 
 Alternatively we can train model with R's `S3` interface (but keep in mind that all text2vec models are R6 classes and they are mutable! So `fit`, `fit_transform` methods modify models!):
 ```{r, message=TRUE, eval=FALSE}

@@ -11,9 +11,8 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-09-29" />
 
-<title>Topic modeling</title>
+<title>text2vec</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -27,44 +26,6 @@
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
 
 
-<style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #0000ff; } /* Keyword */
-code > span.ch { color: #008080; } /* Char */
-code > span.st { color: #008080; } /* String */
-code > span.co { color: #008000; } /* Comment */
-code > span.ot { color: #ff4000; } /* Other */
-code > span.al { color: #ff0000; } /* Alert */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #008000; font-weight: bold; } /* Warning */
-code > span.cn { } /* Constant */
-code > span.sc { color: #008080; } /* SpecialChar */
-code > span.vs { color: #008080; } /* VerbatimString */
-code > span.ss { color: #008080; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { } /* Variable */
-code > span.cf { color: #0000ff; } /* ControlFlow */
-code > span.op { } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #ff4000; } /* Preprocessor */
-code > span.do { color: #008000; } /* Documentation */
-code > span.an { color: #008000; } /* Annotation */
-code > span.cv { color: #008000; } /* CommentVar */
-code > span.at { } /* Attribute */
-code > span.in { color: #008000; } /* Information */
-</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 
 
 <style type="text/css">
@@ -346,56 +307,79 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Topic modeling</h1>
+<h1 class="title toc-ignore">text2vec</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-09-29</em></h4>
 
 </div>
 
 
-<div id="latent-semantic-analysis" class="section level1">
-<h1>Latent Semantic Analysis</h1>
-<p>TODO</p>
+<div id="api" class="section level1">
+<h1>API</h1>
+<p>Goals wich we aim during the development of <code>text2vec</code>:</p>
+<ul>
+<li><strong>Consise</strong> - expose as few functions as possible</li>
+<li><strong>Consistent</strong> - expose unified interfaces, no need to learn new interface for each task</li>
+<li><strong>Flexible</strong> - allow to easlily solve complex tasks</li>
+<li><strong>Fast</strong> - maximize efficiency per single thread, transparently scale to multiple threads on multicore machines</li>
+<li><strong>Memory efficient</strong> - use streams and iterators, don’t keep data in RAM if possible</li>
+</ul>
+<p>Conceptually we can divide API into several pieces:</p>
+<div id="vectorization" class="section level2">
+<h2>Vectorization</h2>
+<p>See <a href="vectorization.html">Vectorization</a> section for details.</p>
+<p><code>create_*</code> family functions, <code>vocab_vectorizer()</code> and <code>hash_vectorizer()</code> are made to create vocabularies, Document-Term matrices and Term co-occurence matrices. Simply this family of functions is in charge of converting text into numeric form. Main functions are:</p>
+<ul>
+<li><code>create_vocabulary()</code></li>
+<li><code>create_dtm()</code></li>
+<li><code>create_tcm()</code></li>
+<li><code>vocab_vectorizer()</code>, <code>hash_vectorizer()</code></li>
+</ul>
 </div>
-<div id="latent-dirichlet-allocation" class="section level1">
-<h1>Latent Dirichlet Allocation</h1>
-<p>TODO</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(text2vec)
-<span class="kw">data</span>(<span class="st">&quot;movie_review&quot;</span>)
-tokens =<span class="st"> </span>movie_review$review %&gt;%<span class="st"> </span>
-<span class="st">  </span>tolower %&gt;%<span class="st"> </span>
-<span class="st">  </span>word_tokenizer
-<span class="co"># turn off progressbar because it won&#39;t look nice in rmd</span>
-it =<span class="st"> </span><span class="kw">itoken</span>(tokens, <span class="dt">ids =</span> movie_review$id, <span class="dt">progressbar =</span> <span class="ot">FALSE</span>)
-v =<span class="st"> </span><span class="kw">create_vocabulary</span>(it) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">prune_vocabulary</span>(<span class="dt">term_count_min =</span> <span class="dv">10</span>, <span class="dt">doc_proportion_max =</span> <span class="fl">0.2</span>)
-vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(v)
-dtm =<span class="st"> </span><span class="kw">create_dtm</span>(it, vectorizer, <span class="dt">type =</span> <span class="st">&quot;lda_c&quot;</span>)
-
-lda_model =<span class="st"> </span>
-<span class="st">  </span>LDA$<span class="kw">new</span>(<span class="dt">n_topics =</span> <span class="dv">10</span>, <span class="dt">vocabulary =</span> v, 
-          <span class="dt">doc_topic_prior =</span> <span class="fl">0.1</span>, <span class="dt">topic_word_prior =</span> <span class="fl">0.01</span>)
-doc_topic_distr =<span class="st"> </span>
-<span class="st">  </span>lda_model$<span class="kw">fit_transform</span>(dtm, <span class="dt">n_iter =</span> <span class="dv">100</span>, <span class="dt">convergence_tol =</span> <span class="fl">0.01</span>, 
-                          <span class="dt">check_convergence_every_n =</span> <span class="dv">10</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lda_model$<span class="kw">plot</span>()</code></pre></div>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>
-LDAvis
-</title>
-<script src="topic_modeling_files/ldavis/d3.v3.js"></script>
-<script src="topic_modeling_files/ldavis/ldavis.js"></script>
-<link rel="stylesheet" type="text/css" href="topic_modeling_files/ldavis/lda.css">
-</head>
-<body>
-<div id="lda">
-
+<div id="io-handling." class="section level2">
+<h2>I/O handling.</h2>
+<p>All functions from <code>create_*</code> family work with <strong>iterators</strong> over tokens as input. Functions are good examples for creation of such iterators. Once user need some custom source, he/she just need to create correct iterator over tokens. Good examples are:</p>
+<ul>
+<li><code>itoken()</code> for creation iterator over tokens</li>
+<li><code>ifiles()</code> for creation iterator over files. Note that text2vec doesn’t handle I/O, users should provide their own reader function (<code>data.table::fread()</code> and functions from <code>readr</code> package usually are good choices).</li>
+</ul>
 </div>
-<script>
-    var vis = new LDAvis("#lda", "topic_modeling_files/ldavis/lda.json");
-  </script>
-</body>
+<div id="models" class="section level2">
+<h2>Models</h2>
+<p>text2vec provides unified interface for models, which is inspired by <code>scikit-learn</code> interface. Models in text2vec are mostly <em>transformers</em> - they transform Document-Term matrix. Models include:</p>
+<ul>
+<li>Tf-idf reweighting. See <a href="vectorization.html#tf-idf">Tf-idf in vectorization</a> section.</li>
+<li>Global Vectors (<strong>GloVe</strong>) word embeddings. See <a href="glove.html">Word Embeddings</a> section.</li>
+<li>Latent Semantic Analysis (<strong>LSA</strong>). See <a href="topic_modeling.html#latent_semantic_analysis">LSA</a> section.</li>
+<li>Latent Dirichlet Allocation (<strong>LDA</strong>). See <a href="topic_modeling.html#latent_dirichlet_allocation">LDA</a> section.</li>
+</ul>
+<p><strong>All text2vec models are mutable! This means that <code>fit()</code> and <code>fit_transform()</code> methods change model which fed as argument.</strong></p>
+<div id="important-verbs" class="section level3">
+<h3>Important verbs</h3>
+<p>All models have unified interface. User should only remember few verbs for models manipulation:</p>
+<ul>
+<li><code>model$new(...)</code> - create model object, set up initial parameters for model. This is model-specific. For example for LDA it can be number of topics <span class="math inline">\(K\)</span>, alpha(<span class="math inline">\(\alpha\)</span>) and eta(<span class="math inline">\(\eta\)</span>) priors.</li>
+<li><code>model$fit(x, ...)</code> - fits model to data.</li>
+<li><code>model$fit_transform(x, ...)</code> - fits model to data and then transform data.</li>
+<li><code>model$transform(x_new, ...)</code> - transorms new data with pretrained model.</li>
+</ul>
+</div>
+</div>
+<div id="distances" class="section level2">
+<h2>Distances</h2>
+<p>See <a href="distances.html">Distances</a> section for details.</p>
+<p>text2vec provides only <strong>two</strong> functions for calculation distances between 2 sets of the documents, assuming each set of documents is represented as (sparse)matrix:</p>
+<ul>
+<li><code>dist2(x, y, method)</code> - calculates distance between <strong>each row</strong> of matrix <code>x</code> and <strong>each row</strong> of matrix <code>y</code> using given <code>method</code>.</li>
+<li><code>pdist2(x, y, method)</code> - calculates <strong>p</strong>arallel distance between rows of matrix <code>x</code> and <strong>corresponding</strong> rows of matrix <code>y</code> using given <code>method.</code></li>
+</ul>
+<p>Distances/similarities implemented at the moment:</p>
+<ul>
+<li>Cosine</li>
+<li>Jaccard</li>
+<li>Euclidean</li>
+<li>Relaxed Word Mover’s Distance</li>
+</ul>
+</div>
 </div>
 
 

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-09-26" />
+<meta name="date" content="2016-09-29" />
 
 <title>Vectorization</title>
 
@@ -306,6 +306,9 @@ div.tocify {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
   <a href="vectorization.html">Vectorization</a>
 </li>
 <li>
@@ -315,13 +318,22 @@ div.tocify {
   <a href="topic_modeling.html">Topic modeling</a>
 </li>
 <li>
-  <a href="distances.html">Document distances</a>
+  <a href="distances.html">Distances</a>
+</li>
+<li>
+  <a href="api.html">API</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dselivanov/text2vec">
     <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://stackoverflow.com/questions/tagged/text2vec">
+    <span class="fa fa-stack-overflow"></span>
      
   </a>
 </li>
@@ -336,7 +348,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Vectorization</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-09-26</em></h4>
+<h4 class="date"><em>2016-09-29</em></h4>
 
 </div>
 
@@ -350,10 +362,10 @@ div.tocify {
 <li>The researcher fits a model to that DTM. These models might include text classification, topic modeling, similarity search, etc. Fitting the model will include tuning and validating the model.</li>
 <li>Finally the researcher applies the model to new data.</li>
 </ol>
-<p>In this vignette we will primarily discuss the first step. Texts themselves can take up a lot of memory, but vectorized texts usually do not, because they are stored as sparse matrices. Because of R’s copy-on-modify semantics, it is not easy to iteratively grow a DTM. Thus constructing a DTM, even for a small collections of documents, can be a serious bottleneck for analysts and researchers. It involves reading the whole collection of text documents into RAM and processing it as single vector, which can easily increase memory use by a factor of 2 to 4. The text2vec package solves this problem by providing a better way of constructing a document-term matrix.</p>
-<p>Lets demonstrate package core functionality by applying it to a real problem - sentiment analysis.</p>
-<p>This package provides the <code>movie_review</code> dataset. It consists of 5000 movie reviews, each of which is marked as positive or negative. We will use also use the <a href="https://cran.r-project.org/package=data.table">data.table</a> package for data wrangling.</p>
-<p>First of all lets split out dataset into two parts - <em>train</em> and <em>test</em>. We will show how to perform data manipulations on <em>train</em> set and then apply exactly the same manipulations on the <em>test</em> set:</p>
+<p>In this vignette we will primarily discuss the first step. Texts themselves can take up a lot of memory, but vectorized texts usually do not, because they are stored as sparse matrices. Because of R’s copy-on-modify semantics, it is not easy to iteratively grow a DTM. Thus constructing a DTM, even for a small collections of documents, can be a serious bottleneck for analysts and researchers. It involves reading the whole collection of text documents into RAM and processing it as single vector, which can easily increase memory use by a factor of 2 to 4. The <em>text2vec</em> package solves this problem by providing a better way of constructing a document-term matrix.</p>
+<p>Let’s demonstrate package core functionality by applying it to a real case problem - sentiment analysis.</p>
+<p><em>text2vec</em> package provides the <code>movie_review</code> dataset. It consists of 5000 movie reviews, each of which is marked as positive or negative. We will also use the <a href="https://cran.r-project.org/package=data.table">data.table</a> package for data wrangling.</p>
+<p>First of all let’s split out dataset into two parts - <em>train</em> and <em>test</em>. We will show how to perform data manipulations on <em>train</em> set and then apply exactly the same manipulations on the <em>test</em> set:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(text2vec)
 <span class="kw">library</span>(data.table)
 <span class="kw">data</span>(<span class="st">&quot;movie_review&quot;</span>)
@@ -414,13 +426,13 @@ vocab</code></pre></div>
 ## 35594:       personal          102         94
 ## 35595:            end          921        743
 ## 35596:        address           10         10</code></pre>
-<p>Note that text2vec provides a few tokenizer functions (see <code>?tokenizers</code>). These are just simple wrappers for the <code>base::gsub()</code> function and are not very fast or flexible. If you need something smarter or faster you can use the <a href="https://cran.r-project.org/package=tokenizers">tokenizers</a> package which will cover most use cases, or write your own tokenizer using the <a href="https://cran.r-project.org/package=stringi">stringi</a> package.</p>
+<p>Note that <em>text2vec</em> provides a few tokenizer functions (see <code>?tokenizers</code>). These are just simple wrappers for the <code>base::gsub()</code> function and are not very fast or flexible. If you need something smarter or faster you can use the <a href="https://cran.r-project.org/package=tokenizers">tokenizers</a> package which will cover most use cases, or write your own tokenizer using the <a href="https://cran.r-project.org/package=stringi">stringi</a> package.</p>
 <p>Now that we have a vocabulary, we can construct a document-term matrix.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(vocab)
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 0.7174239 secs</code></pre>
+<pre><code>## Time difference of 1.005393 secs</code></pre>
 <p>Now we have a DTM and can check its dimensions.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(dtm_train)</code></pre></div>
 <pre><code>## [1]  4000 35596</code></pre>
@@ -444,12 +456,12 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                               <span class="co"># again lower number of iterations for faster training</span>
                               <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 3.414186 secs</code></pre>
+<pre><code>## Time difference of 2.604032 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/fit_1-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
 <pre><code>## [1] &quot;max AUC = 0.923&quot;</code></pre>
-<p>We have successfully fit a model to our DTM. Now we can check the model’s performance on test data. Note that we use eactly the same functions from preprosessing and tokenization. Also we reuse/use the same <code>vectorizer</code> - function which maps terms to indices.</p>
+<p>We have successfully fit a model to our DTM. Now we can check the model’s performance on test data. Note that we use exactly the same functions from preprosessing and tokenization. Also we reuse/use the same <code>vectorizer</code> - function which maps terms to indices.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Note that most text2vec functions are pipe friendly!</span>
 it_test =<span class="st"> </span>test$review %&gt;%<span class="st"> </span>
 <span class="st">  </span>prep_fun %&gt;%<span class="st"> </span>
@@ -463,7 +475,7 @@ dtm_test =<span class="st"> </span><span class="kw">create_dtm</span>(it_test, v
 preds =<span class="st"> </span><span class="kw">predict</span>(glmnet_classifier, dtm_test, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)[,<span class="dv">1</span>]
 glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 <pre><code>## [1] 0.916697</code></pre>
-<p>As we can see, performance on the test data is roughy the same as we expect from cross-validation.</p>
+<p>As we can see, performance on the test data is roughly the same as we expect from cross-validation.</p>
 <div id="pruning-vocabulary" class="section level3">
 <h3>Pruning vocabulary</h3>
 <p>We can note, however, that the training time for our model was quite high. We can reduce it and also significantly improve accuracy by pruning the vocabulary.</p>
@@ -472,7 +484,7 @@ glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 vocab =<span class="st"> </span><span class="kw">create_vocabulary</span>(it_train, <span class="dt">stopwords =</span> stop_words)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 0.457612 secs</code></pre>
+<pre><code>## Time difference of 0.4655409 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pruned_vocab =<span class="st"> </span><span class="kw">prune_vocabulary</span>(vocab, 
                                  <span class="dt">term_count_min =</span> <span class="dv">10</span>, 
                                  <span class="dt">doc_proportion_max =</span> <span class="fl">0.5</span>,
@@ -482,7 +494,7 @@ vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(pr
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train  =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 0.6838391 secs</code></pre>
+<pre><code>## Time difference of 0.7496419 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(dtm_train)</code></pre></div>
 <pre><code>## [1] 4000 6585</code></pre>
 <p>Note that the new DTM has many fewer columns than the original DTM. This usually leads to both accuracy improvement (because we removed “noise”) and reduction of the training time.</p>
@@ -498,7 +510,7 @@ dtm_train  =<span class="st"> </span><span class="kw">create_dtm</span>(it_train
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 vocab =<span class="st"> </span><span class="kw">create_vocabulary</span>(it_train, <span class="dt">ngram =</span> <span class="kw">c</span>(1L, 2L))
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 1.313572 secs</code></pre>
+<pre><code>## Time difference of 1.312586 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vocab =<span class="st"> </span>vocab %&gt;%<span class="st"> </span><span class="kw">prune_vocabulary</span>(<span class="dt">term_count_min =</span> <span class="dv">10</span>, 
                    <span class="dt">doc_proportion_max =</span> <span class="fl">0.5</span>)
 
@@ -515,7 +527,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                  <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                  <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 2.921171 secs</code></pre>
+<pre><code>## Time difference of 2.594363 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/ngram_dtm_1-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -530,14 +542,14 @@ glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 </div>
 <div id="feature-hashing" class="section level2">
 <h2>Feature hashing</h2>
-<p>If you are not familiar with feature hashing (the so-called “hashing trick”) I recommend that you start with the <a href="https://en.wikipedia.org/wiki/Feature_hashing">Wikipedia article</a>, then read the <a href="http://alex.smola.org/papers/2009/Weinbergeretal09.pdf">original paper</a> by a Yahoo! research team. This techique is very fast because we don’t have to perform a lookup over an associative array. Another benefit is that it leads to a very low memory footprint, since we can map an arbitrary number of features into much more compact space. This method was popularized by Yahoo! and is widely used in <a href="https://github.com/JohnLangford/vowpal_wabbit/">Vowpal Wabbit</a>.</p>
-<p>Here is how to use feature hashing in text2vec.</p>
+<p>If you are not familiar with feature hashing (the so-called “hashing trick”) I recommend you start with the <a href="https://en.wikipedia.org/wiki/Feature_hashing">Wikipedia article</a>, then read the <a href="http://alex.smola.org/papers/2009/Weinbergeretal09.pdf">original paper</a> by a Yahoo! research team. This techique is very fast because we don’t have to perform a lookup over an associative array. Another benefit is that it leads to a very low memory footprint, since we can map an arbitrary number of features into much more compact space. This method was popularized by Yahoo! and is widely used in <a href="https://github.com/JohnLangford/vowpal_wabbit/">Vowpal Wabbit</a>.</p>
+<p>Here is how to use feature hashing in <em>text2vec</em>.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">h_vectorizer =<span class="st"> </span><span class="kw">hash_vectorizer</span>(<span class="dt">hash_size =</span> <span class="dv">2</span> ^<span class="st"> </span><span class="dv">14</span>, <span class="dt">ngram =</span> <span class="kw">c</span>(1L, 2L))
 
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, h_vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 1.587457 secs</code></pre>
+<pre><code>## Time difference of 1.577157 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="dt">x =</span> dtm_train, <span class="dt">y =</span> train[[<span class="st">&#39;sentiment&#39;</span>]], 
                              <span class="dt">family =</span> <span class="st">&#39;binomial&#39;</span>, 
@@ -547,7 +559,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                              <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                              <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 4.679306 secs</code></pre>
+<pre><code>## Time difference of 4.683837 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/hash_dtm-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -557,17 +569,17 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
 preds =<span class="st"> </span><span class="kw">predict</span>(glmnet_classifier, dtm_test , <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)[, <span class="dv">1</span>]
 glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 <pre><code>## [1] 0.9036685</code></pre>
-<p>As you can see, we our AUC is a bit worse, but DTM construction time was considerably lower. On large collections of documents this can be a significant advantage.</p>
+<p>As you can see our AUC is a bit worse but DTM construction time is considerably lower. On large collections of documents this can be a significant advantage.</p>
 </div>
 </div>
 <div id="basic-transformations" class="section level1">
 <h1>Basic transformations</h1>
-<p>Before doing analysis it usually can be useful to <em>transform</em> DTM. For example lengths of the documents in collection can significantly vary. At this case it can be useful to apply normalization.</p>
+<p>Before doing analysis it usually can be useful to <em>transform</em> DTM. For example lengths of the documents in collection can significantly vary. In this case it can be useful to apply normalization.</p>
 <div id="normalization" class="section level2">
 <h2>Normalization</h2>
 <p>By “normalization” we assume <em>transformation</em> of the <em>rows</em> of DTM so we adjust values measured on different scales to a notionally common scale. For the case when length of the documents vary we can apply “L1” normalization. It means we will transform rows in a way that <code>sum</code> of the row values will be equal to <code>1</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dtm_train_l1_norm =<span class="st"> </span><span class="kw">normalize</span>(dtm_train, <span class="st">&quot;l1&quot;</span>)</code></pre></div>
-<p>After that we can do our analysis and probably have more chance for success.</p>
+<p>By this transformation we should improve the quality of data preparation.</p>
 </div>
 <div id="tf-idf" class="section level2">
 <h2>TF-IDF</h2>
@@ -584,7 +596,7 @@ dtm_train_tfidf =<span class="st"> </span><span class="kw">fit_transform</span>(
 <span class="co"># apply pre-trained tf-idf transformation to test data</span>
 dtm_test_tfidf  =<span class="st"> </span><span class="kw">create_dtm</span>(it_test, vectorizer) %&gt;%<span class="st"> </span>
 <span class="st">  </span><span class="kw">transform</span>(tfidf)</code></pre></div>
-<p>Note that here we first time touched <em>model</em> object in <code>text2vec</code>. At this moment reader should remember several important things about text2vec models:</p>
+<p>Note that here we first time touched <em>model</em> object in <em>text2vec</em>. At this moment the user should remember several important things about <em>text2vec</em> models:</p>
 <ol style="list-style-type: decimal">
 <li>Models can be fitted on a given data (train) and applied to unseen data (test)</li>
 <li><strong>Models are mutable</strong> - once you will pass model to <code>fit()</code> or <code>fit_transform()</code> function, model will be modifed by it.</li>
@@ -601,15 +613,16 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                               <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                               <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 3.093204 secs</code></pre>
+<pre><code>## Time difference of 2.953064 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/fit_2-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
 <pre><code>## [1] &quot;max AUC = 0.9146&quot;</code></pre>
-<p>Let’s check the model performance on the test dataset.</p>
+<p>Let’s check the model performance on the test dataset:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">preds =<span class="st"> </span><span class="kw">predict</span>(glmnet_classifier, dtm_test_tfidf, <span class="dt">type =</span> <span class="st">&#39;response&#39;</span>)[,<span class="dv">1</span>]
 glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 <pre><code>## [1] 0.9053246</code></pre>
+<p>Usually <em>tf-idf</em> transformation <strong>significantly</strong> improve performance on most of the dowstream tasks.</p>
 </div>
 </div>
 

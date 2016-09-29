@@ -9,6 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
+<meta name="author" content="Dmitriy Selivanov" />
 
 
 <title>text2vec</title>
@@ -162,6 +163,9 @@ $(document).ready(function () {
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
   <a href="vectorization.html">Vectorization</a>
 </li>
 <li>
@@ -171,13 +175,22 @@ $(document).ready(function () {
   <a href="topic_modeling.html">Topic modeling</a>
 </li>
 <li>
-  <a href="distances.html">Document distances</a>
+  <a href="distances.html">Distances</a>
+</li>
+<li>
+  <a href="api.html">API</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dselivanov/text2vec">
     <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="http://stackoverflow.com/questions/tagged/text2vec">
+    <span class="fa fa-stack-overflow"></span>
      
   </a>
 </li>
@@ -191,19 +204,28 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">text2vec</h1>
+<h4 class="author"><em>Dmitriy Selivanov</em></h4>
 
 </div>
 
 
-<p><strong>text2vec</strong> provides an efficient framework with a concise API for text analysis and natural language processing (NLP) in R.</p>
-<p>This package is efficient because it is carefully written in C++, which also means that text2vec is memory friendly. Some parts, such as training GloVe word embeddings, are fully parallelized using the excellent <a href="http://rcppcore.github.io/RcppParallel/">RcppParallel</a> package. This means that the word embeddings are computed in parallel on OS X, Linux, Windows, and Solaris (x86) without any additional tuning or tricks. Other emrassingly parallel tasks such as vectorization can use any parallel backend wich supports <code>foreach</code> package. So they can achieve near-linear scalability with number of available cores. Finally, a streaming API means that users do not have to load all the data into RAM.</p>
-<p>For the detailed overview of <code>text2vec</code> functionality please refer to following pages:</p>
-<ol style="list-style-type: decimal">
-<li><a href="vectorization.html">Vectorization</a> - creation <em>Document-Term Matrices</em> (<strong>DTM</strong>)</li>
-<li><a href="topic_modeling.html">Topic Modeling</a> - <em>Latent Semantic Analysis</em> (<strong>LSA</strong>) and <em>Latent Dirichlet Allocation</em> (<strong>LDA</strong>) models</li>
-<li><a href="glove.html">Word Embeddings</a> - <em>Global Vectors</em> (<strong>GloVe</strong>) word embeddings</li>
-<li><a href="distances.html">Distances</a> - various distances between documents - <em>Cosine, Jaccard, Relaxed Word Mover’s Distance</em> (<strong>RWMD</strong>)</li>
-</ol>
+<p>You just discovered <strong><a href="https://github.com/dselivanov/text2vec">text2vec</a></strong>!</p>
+<p><strong>text2vec</strong> is an R package which provides an efficient framework with a concise API for text analysis and natural language processing (NLP).</p>
+<p>Goals which we aimed during the development of <code>text2vec</code>:</p>
+<ul>
+<li><strong>Consise</strong> - expose as few functions as possible</li>
+<li><strong>Consistent</strong> - expose unified interfaces, no need to learn new interface for each task</li>
+<li><strong>Flexible</strong> - allow to easlily solve complex tasks</li>
+<li><strong>Fast</strong> - maximize efficiency per single thread, transparently scale to multiple threads on multicore machines</li>
+<li><strong>Memory efficient</strong> - use streams and iterators, don’t keep data in RAM if possible</li>
+</ul>
+<p>See <a href="api.html">API</a> section for details.</p>
+<div id="performance" class="section level1">
+<h1>Performance</h1>
+<p><em>Author of the package is a little bit obsessed about efficiency.</em></p>
+<p>This package is efficient because it is carefully written in C++, which also means that text2vec is memory friendly. Some parts, such as training GloVe word embeddings, are fully parallelized using the excellent <a href="http://rcppcore.github.io/RcppParallel/">RcppParallel</a> package. This means that the word embeddings are computed in parallel on OS X, Linux, Windows, and Solaris (x86) without any additional tuning or tricks. Other emrassingly parallel tasks such as vectorization can use any parallel backend wich supports <a href="https://cran.r-project.org/web/packages/foreach/index.html">foreach</a> package. So they can achieve near-linear scalability with number of available cores. Finally, a streaming API means that users do not have to load all the data into RAM.</p>
+<p><img src="images/htop.png" id="lead-logo" class="pull-right"/></p>
+</div>
 
 
 
