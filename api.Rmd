@@ -57,10 +57,13 @@ All models have unified interface. User should only remember few verbs for model
 
 See [Distances](distances.html) section for details.
 
-text2vec provides only **two** functions for calculation distances between 2 sets of the documents, assuming each set of documents is represented as (sparse)matrix:
+text2vec package provides 2 set of functions for measuring various distances/similarity in a unified way. All methods are written with special attention to computational performance and memory efficiency.
 
-* `dist2(x, y, method)` - calculates distance between **each row** of matrix `x` and **each row** of matrix `y` using given `method`.
-* `pdist2(x, y, method)` - calculates **p**arallel distance between rows of matrix `x` and **corresponding** rows of matrix `y` using given `method.` 
+1. `sim2(x, y, method)` - calculates similarity between **each row** of matrix `x` and **each row** of matrix `y` using given `method`.
+1. `psim2(x, y, method)` - calculates **p**arallel similarity between rows of matrix `x` and **corresponding** rows of matrix `y` using given `method.` 
+1. `dist2(x, y, method)` - calculates distance/dissimilarity between **each row** of matrix `x` and **each row** of matrix `y` using given `method`.
+1. `pdist2(x, y, method)` - calculates **p**arallel distance/dissimilarity between rows of matrix `x` and **corresponding** rows of matrix `y` using given `method.` 
+
 
 Distances/similarities implemented at the moment:
 
