@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-09-29" />
+<meta name="date" content="2016-10-03" />
 
 <title>Vectorization</title>
 
@@ -318,7 +318,7 @@ div.tocify {
   <a href="topic_modeling.html">Topic modeling</a>
 </li>
 <li>
-  <a href="distances.html">Distances</a>
+  <a href="similarity.html">Similarity</a>
 </li>
 <li>
   <a href="api.html">API</a>
@@ -348,7 +348,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Vectorization</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-09-29</em></h4>
+<h4 class="date"><em>2016-10-03</em></h4>
 
 </div>
 
@@ -432,7 +432,7 @@ vocab</code></pre></div>
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 1.005393 secs</code></pre>
+<pre><code>## Time difference of 1.075712 secs</code></pre>
 <p>Now we have a DTM and can check its dimensions.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(dtm_train)</code></pre></div>
 <pre><code>## [1]  4000 35596</code></pre>
@@ -456,7 +456,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                               <span class="co"># again lower number of iterations for faster training</span>
                               <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 2.604032 secs</code></pre>
+<pre><code>## Time difference of 2.794799 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/fit_1-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -484,7 +484,7 @@ glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 vocab =<span class="st"> </span><span class="kw">create_vocabulary</span>(it_train, <span class="dt">stopwords =</span> stop_words)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 0.4655409 secs</code></pre>
+<pre><code>## Time difference of 0.549772 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pruned_vocab =<span class="st"> </span><span class="kw">prune_vocabulary</span>(vocab, 
                                  <span class="dt">term_count_min =</span> <span class="dv">10</span>, 
                                  <span class="dt">doc_proportion_max =</span> <span class="fl">0.5</span>,
@@ -494,7 +494,7 @@ vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(pr
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train  =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 0.7496419 secs</code></pre>
+<pre><code>## Time difference of 1.13489 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(dtm_train)</code></pre></div>
 <pre><code>## [1] 4000 6585</code></pre>
 <p>Note that the new DTM has many fewer columns than the original DTM. This usually leads to both accuracy improvement (because we removed “noise”) and reduction of the training time.</p>
@@ -510,7 +510,7 @@ dtm_train  =<span class="st"> </span><span class="kw">create_dtm</span>(it_train
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 vocab =<span class="st"> </span><span class="kw">create_vocabulary</span>(it_train, <span class="dt">ngram =</span> <span class="kw">c</span>(1L, 2L))
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 1.312586 secs</code></pre>
+<pre><code>## Time difference of 1.673085 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vocab =<span class="st"> </span>vocab %&gt;%<span class="st"> </span><span class="kw">prune_vocabulary</span>(<span class="dt">term_count_min =</span> <span class="dv">10</span>, 
                    <span class="dt">doc_proportion_max =</span> <span class="fl">0.5</span>)
 
@@ -527,7 +527,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                  <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                  <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 2.594363 secs</code></pre>
+<pre><code>## Time difference of 2.6069 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/ngram_dtm_1-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -549,7 +549,7 @@ glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 dtm_train =<span class="st"> </span><span class="kw">create_dtm</span>(it_train, h_vectorizer)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 1.577157 secs</code></pre>
+<pre><code>## Time difference of 1.889305 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">t1 =<span class="st"> </span><span class="kw">Sys.time</span>()
 glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<span class="dt">x =</span> dtm_train, <span class="dt">y =</span> train[[<span class="st">&#39;sentiment&#39;</span>]], 
                              <span class="dt">family =</span> <span class="st">&#39;binomial&#39;</span>, 
@@ -559,7 +559,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                              <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                              <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 4.683837 secs</code></pre>
+<pre><code>## Time difference of 4.10252 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/hash_dtm-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -613,7 +613,7 @@ glmnet_classifier =<span class="st"> </span><span class="kw">cv.glmnet</span>(<s
                               <span class="dt">thresh =</span> <span class="fl">1e-3</span>,
                               <span class="dt">maxit =</span> <span class="fl">1e3</span>)
 <span class="kw">print</span>(<span class="kw">difftime</span>(<span class="kw">Sys.time</span>(), t1, <span class="dt">units =</span> <span class="st">&#39;sec&#39;</span>))</code></pre></div>
-<pre><code>## Time difference of 2.953064 secs</code></pre>
+<pre><code>## Time difference of 2.659779 secs</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(glmnet_classifier)</code></pre></div>
 <p><img src="vectorization_files/figure-html/fit_2-1.png" width="672" /></p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">print</span>(<span class="kw">paste</span>(<span class="st">&quot;max AUC =&quot;</span>, <span class="kw">round</span>(<span class="kw">max</span>(glmnet_classifier$cvm), <span class="dv">4</span>)))</code></pre></div>
@@ -632,6 +632,7 @@ glmnet:::<span class="kw">auc</span>(test$sentiment, preds)</code></pre></div>
 
 <footer class="footer">
   <div class="text-muted"><strong>text2vec</strong> is an <a href="http://www.dsnotes.com">Dmitry Selivanov</a> and contributors project. &copy;  2016.</div>
+  <div class="text-muted"> If you found any BUGS please report them <a href="https://github.com/dselivanov/text2vec/issues">here</a>.</div>
 </footer>
 
 <script>

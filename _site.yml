@@ -11,8 +11,8 @@ navbar:
       href: glove.html
     - text: "Topic modeling"
       href: topic_modeling.html
-    - text: "Distances"
-      href: distances.html
+    - text: "Similarity"
+      href: similarity.html
     - text: "API"
       href: api.html      
   right:

@@ -279,7 +279,7 @@ div.tocify {
   <a href="topic_modeling.html">Topic modeling</a>
 </li>
 <li>
-  <a href="distances.html">Distances</a>
+  <a href="similarity.html">Similarity</a>
 </li>
 <li>
   <a href="api.html">API</a>
@@ -368,11 +368,13 @@ div.tocify {
 <div id="distances" class="section level2">
 <h2>Distances</h2>
 <p>See <a href="distances.html">Distances</a> section for details.</p>
-<p>text2vec provides only <strong>two</strong> functions for calculation distances between 2 sets of the documents, assuming each set of documents is represented as (sparse)matrix:</p>
-<ul>
-<li><code>dist2(x, y, method)</code> - calculates distance between <strong>each row</strong> of matrix <code>x</code> and <strong>each row</strong> of matrix <code>y</code> using given <code>method</code>.</li>
-<li><code>pdist2(x, y, method)</code> - calculates <strong>p</strong>arallel distance between rows of matrix <code>x</code> and <strong>corresponding</strong> rows of matrix <code>y</code> using given <code>method.</code></li>
-</ul>
+<p>text2vec package provides 2 set of functions for measuring various distances/similarity in a unified way. All methods are written with special attention to computational performance and memory efficiency.</p>
+<ol style="list-style-type: decimal">
+<li><code>sim2(x, y, method)</code> - calculates similarity between <strong>each row</strong> of matrix <code>x</code> and <strong>each row</strong> of matrix <code>y</code> using given <code>method</code>.</li>
+<li><code>psim2(x, y, method)</code> - calculates <strong>p</strong>arallel similarity between rows of matrix <code>x</code> and <strong>corresponding</strong> rows of matrix <code>y</code> using given <code>method.</code></li>
+<li><code>dist2(x, y, method)</code> - calculates distance/dissimilarity between <strong>each row</strong> of matrix <code>x</code> and <strong>each row</strong> of matrix <code>y</code> using given <code>method</code>.</li>
+<li><code>pdist2(x, y, method)</code> - calculates <strong>p</strong>arallel distance/dissimilarity between rows of matrix <code>x</code> and <strong>corresponding</strong> rows of matrix <code>y</code> using given <code>method.</code></li>
+</ol>
 <p>Distances/similarities implemented at the moment:</p>
 <ul>
 <li>Cosine</li>
@@ -389,6 +391,7 @@ div.tocify {
 
 <footer class="footer">
   <div class="text-muted"><strong>text2vec</strong> is an <a href="http://www.dsnotes.com">Dmitry Selivanov</a> and contributors project. &copy;  2016.</div>
+  <div class="text-muted"> If you found any BUGS please report them <a href="https://github.com/dselivanov/text2vec/issues">here</a>.</div>
 </footer>
 
 <script>

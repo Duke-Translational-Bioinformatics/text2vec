@@ -1,13 +1,13 @@
 ---
-title: "Distances between documents"
+title: "Documents similarity"
 author: "Dmitriy Selivanov"
 date: "`r Sys.Date()`"
 ---
 ```{r global_options, include=FALSE}
-knitr::opts_chunk$set(echo=TRUE, eval=FALSE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo=TRUE, eval=TRUE, warning=FALSE, message=FALSE)
 ```
 
-# Distances between documents
+# Documents similarity
 
 Document similarity (or distance between documents) is a one of the central themes in Information Retrieval. 
 How humans usually define how similar are documents? Usually documents treated as similar if they are semantically close and describe similar concepts. On other hand "similarity" can be used in context of duplicate detection. We will review several common approaches.
@@ -94,13 +94,12 @@ Check result:
 dim(d1_d2_jac_sim)
 d1_d2_jac_sim[1:5, 1:5]
 ```
-Also we can comptute *"parallel"* similarity. Note, that user have to provide matrices with equal shapes:
+Also we can comptute *"parallel"* similarity - similarity between corresponding rows of matrices (matrices should have identical shapes):
 ```{r}
 dtm1_2 = dtm1[1:200, ]
 dtm2_2 = dtm2[1:200, ]
 d1_d2_jac_psim = psim2(dtm1_2, dtm2_2, method = "jaccard", norm = "none")
 str(d1_d2_jac_psim)
-d1_d2_jac_psim[1:5]
 ```
 We define *Jaccard distance* or *Jaccard dissimilarity*  as $1 - similarity(doc_1, doc_2)$. `sim2()` and `psim2()` have corresponding companion functions `dist2()`, `pdist2()` which computes dissimilarity. Note however that in many cases similarity between documents is 0. `sim2` function exploit this advantage - result matrix will be sparse. Use `dist2()` on large sparse matrices carefully.
 
@@ -167,7 +166,7 @@ m1 = dist2(x, y, method = "euclidean")
 m1[1:5, 1:5]
 ```
 
-Also we can apply different row normalization techniques:
+Also we can apply different row normalization techniques (by default was `"l2"` in example above):
 ```{r}
 m2 = dist2(x, y, method = "euclidean", norm = "l1")
 m2[1:5, 1:5]
