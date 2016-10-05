@@ -92,7 +92,7 @@ d1_d2_jac_sim = sim2(dtm1, dtm2, method = "jaccard", norm = "none")
 Check result:
 ```{r}
 dim(d1_d2_jac_sim)
-d1_d2_jac_sim[1:5, 1:5]
+d1_d2_jac_sim[1:2, 1:5]
 ```
 Also we can comptute *"parallel"* similarity - similarity between corresponding rows of matrices (matrices should have identical shapes):
 ```{r}
@@ -119,7 +119,7 @@ d1_d2_cos_sim = sim2(dtm1, dtm2, method = "cosine", norm = "l2")
 Check result:
 ```{r}
 dim(d1_d2_cos_sim)
-d1_d2_cos_sim[1:5, 1:5]
+d1_d2_cos_sim[1:2, 1:5]
 ```
 
 ### Cosine similarity with Tf-Idf
@@ -133,7 +133,7 @@ dtm_tfidf = fit_transform(dtm, tfidf)
 Calculate similarities between all rows of `dtm_tfidf` matrix:
 ```{r}
 d1_d2_tfidf_cos_sim = sim2(x = dtm_tfidf, method = "cosine", norm = "l2")
-d1_d2_tfidf_cos_sim[1:5, 1:5]
+d1_d2_tfidf_cos_sim[1:2, 1:5]
 ```
 
 ### Cosine similarity with LSA
@@ -147,7 +147,7 @@ dtm_tfidf_lsa = fit_transform(dtm_tfidf, lsa)
 Calculate similarities between all rows of `dtm_tfidf_lsa` matrix:
 ```{r}
 d1_d2_tfidf_cos_sim = sim2(x = dtm_tfidf_lsa, method = "cosine", norm = "l2")
-d1_d2_tfidf_cos_sim[1:5, 1:5]
+d1_d2_tfidf_cos_sim[1:2, 1:5]
 ```
 And "parallel" similarities:
 ```{r}
@@ -163,13 +163,10 @@ Euclidean **distance** is not so useful in NLP field as Jaccard or Cosine simila
 x = dtm_tfidf_lsa[1:300, ]
 y = dtm_tfidf_lsa[1:200, ]
 m1 = dist2(x, y, method = "euclidean")
-m1[1:5, 1:5]
 ```
 
 Also we can apply different row normalization techniques (by default was `"l2"` in example above):
 ```{r}
 m2 = dist2(x, y, method = "euclidean", norm = "l1")
-m2[1:5, 1:5]
 m3 = dist2(x, y, method = "euclidean", norm = "none")
-m3[1:5, 1:5]
 ```
