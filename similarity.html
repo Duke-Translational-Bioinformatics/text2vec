@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-10-07" />
+<meta name="date" content="2016-11-01" />
 
 <title>Documents similarity</title>
 
@@ -311,8 +311,20 @@ div.tocify {
 <li>
   <a href="vectorization.html">Vectorization</a>
 </li>
-<li>
-  <a href="glove.html">GloVe</a>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    GloVe
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="glove.html">GloVe</a>
+    </li>
+    <li>
+      <a href="glove-cli.html">GloVe-CLI</a>
+    </li>
+  </ul>
 </li>
 <li>
   <a href="topic_modeling.html">Topic modeling</a>
@@ -348,7 +360,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Documents similarity</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-10-07</em></h4>
+<h4 class="date"><em>2016-11-01</em></h4>
 
 </div>
 
@@ -472,14 +484,14 @@ dtm_tfidf_lsa =<span class="st"> </span><span class="kw">fit_transform</span>(dt
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">d1_d2_tfidf_cos_sim =<span class="st"> </span><span class="kw">sim2</span>(<span class="dt">x =</span> dtm_tfidf_lsa, <span class="dt">method =</span> <span class="st">&quot;cosine&quot;</span>, <span class="dt">norm =</span> <span class="st">&quot;l2&quot;</span>)
 d1_d2_tfidf_cos_sim[<span class="dv">1</span>:<span class="dv">2</span>, <span class="dv">1</span>:<span class="dv">5</span>]</code></pre></div>
 <pre><code>##           1         2         3          4          5
-## 1 1.0000000 0.1699856 0.3688872 0.32101030 0.40136543
-## 2 0.1699856 1.0000000 0.2255766 0.03386168 0.05704179</code></pre>
+## 1 1.0000000 0.1699775 0.3688870 0.32099498 0.40136087
+## 2 0.1699775 1.0000000 0.2255526 0.03386678 0.05704895</code></pre>
 <p>And “parallel” similarities:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x =<span class="st"> </span>dtm_tfidf_lsa[<span class="dv">1</span>:<span class="dv">250</span>, ]
 y =<span class="st"> </span>dtm_tfidf_lsa[<span class="dv">251</span>:<span class="dv">500</span>, ]
 <span class="kw">head</span>(<span class="kw">psim2</span>(<span class="dt">x =</span> x, <span class="dt">y =</span> y, <span class="dt">method =</span> <span class="st">&quot;cosine&quot;</span>, <span class="dt">norm =</span> <span class="st">&quot;l2&quot;</span>))</code></pre></div>
-<pre><code>##         1         2         3         4         5         6 
-## 0.2168490 0.1982648 0.3050470 0.1004230 0.2924939 0.0367600</code></pre>
+<pre><code>##          1          2          3          4          5          6 
+## 0.21685062 0.19825576 0.30503467 0.10040947 0.29249774 0.03675728</code></pre>
 </div>
 </div>
 <div id="euclidean-distance" class="section level2">

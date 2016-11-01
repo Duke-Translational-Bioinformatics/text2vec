@@ -13,7 +13,7 @@
 
 <meta name="date" content="2016-11-01" />
 
-<title>Topic modeling</title>
+<title>GloVe Command Line Interface</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -358,107 +358,125 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Topic modeling</h1>
+<h1 class="title toc-ignore">GloVe Command Line Interface</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
 <h4 class="date"><em>2016-11-01</em></h4>
 
 </div>
 
 
-<div id="latent-semantic-analysis" class="section level1">
-<h1>Latent Semantic Analysis</h1>
-<p>TODO</p>
-<p>As usual we will use built-in <code>text2vec::moview_review</code> dataset. Let’s clean it a little bit and create DTM:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(stringr)
-<span class="kw">library</span>(text2vec)
-<span class="kw">data</span>(<span class="st">&quot;movie_review&quot;</span>)
-<span class="co"># select 500 rows for faster running times</span>
-movie_review_test =<span class="st"> </span>movie_review[<span class="dv">501</span>:<span class="dv">1000</span>, ]
-movie_review_train =<span class="st"> </span>movie_review[<span class="dv">1</span>:<span class="dv">500</span>, ]
-prep_fun =<span class="st"> </span>function(x) {
-  x %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="co"># make text lower case</span>
-<span class="st">    </span>str_to_lower %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="co"># remove non-alphanumeric symbols</span>
-<span class="st">    </span><span class="kw">str_replace_all</span>(<span class="st">&quot;[^[:alnum:]]&quot;</span>, <span class="st">&quot; &quot;</span>) %&gt;%<span class="st"> </span>
-<span class="st">    </span><span class="co"># collapse multiple spaces</span>
-<span class="st">    </span><span class="kw">str_replace_all</span>(<span class="st">&quot;</span><span class="ch">\\</span><span class="st">s+&quot;</span>, <span class="st">&quot; &quot;</span>)
-}
-movie_review_train$review =<span class="st"> </span><span class="kw">prep_fun</span>(movie_review_train$review)
-it =<span class="st"> </span><span class="kw">itoken</span>(movie_review_train$review, <span class="dt">progressbar =</span> <span class="ot">FALSE</span>)
-v =<span class="st"> </span><span class="kw">create_vocabulary</span>(it) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">prune_vocabulary</span>(<span class="dt">doc_proportion_max =</span> <span class="fl">0.1</span>, <span class="dt">term_count_min =</span> <span class="dv">5</span>)
-vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(v)
-dtm =<span class="st"> </span><span class="kw">create_dtm</span>(it, vectorizer)</code></pre></div>
-<p>Now we will perform tf-idf scaling and the fit and apply LSA model:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tfidf =<span class="st"> </span>TfIdf$<span class="kw">new</span>()
-lsa =<span class="st"> </span>LSA$<span class="kw">new</span>(<span class="dt">n_topics =</span> <span class="dv">10</span>)
-
-<span class="co"># pipe friendly transformation</span>
-dtm_tfidf_lsa =<span class="st"> </span>dtm %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">fit_transform</span>(tfidf) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">fit_transform</span>(lsa)</code></pre></div>
-<p>And we can elegantly apply exactly the same transformation to new data. Elegantly with “not-a-pipe” <code>%&gt;%</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">new_data =<span class="st"> </span>movie_review_test
-new_data_dtm_tfidf_lsa =<span class="st"> </span>
-<span class="st">  </span>new_data$review %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">itoken</span>(<span class="dt">preprocessor =</span> prep_fun, <span class="dt">progressbar =</span> <span class="ot">FALSE</span>) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">create_dtm</span>(vectorizer) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">transform</span>(tfidf) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">transform</span>(lsa)
-<span class="kw">head</span>(new_data_dtm_tfidf_lsa)</code></pre></div>
-<pre><code>##           [,1]       [,2]         [,3]         [,4]         [,5]
-## 1 0.0010757498 0.07883588 -0.012792492  0.001803077 -0.016498829
-## 2 0.0010309045 0.07827933 -0.002480813  0.007431587 -0.013045284
-## 3 0.0008995570 0.09534925 -0.004880675 -0.007976679 -0.033347235
-## 4 0.0009023917 0.09403420  0.012338197  0.007145261 -0.007353982
-## 5 0.0010801880 0.07638067 -0.010959332  0.011642504 -0.017630506
-## 6 0.0009748510 0.08042964 -0.008732528  0.007173264 -0.014004544
-##            [,6]        [,7]          [,8]         [,9]        [,10]
-## 1  0.0103262362 0.009852323 -0.0064973268  0.002294977  0.003113058
-## 2 -0.0001511818 0.007605538 -0.0076489837  0.005333738  0.003353584
-## 3 -0.0028268780 0.016753258 -0.0423168721 -0.521265026  0.038670324
-## 4  0.0171269927 0.005365014 -0.0002391057 -0.007158379  0.012387447
-## 5 -0.0034931519 0.005086364  0.0020006889 -0.001887502 -0.003574490
-## 6 -0.0124146267 0.003978910 -0.0209399126  0.008284681  0.011476810</code></pre>
+<p>For non-R users we provide CLI (command line interface) - see separate repository - <a href="https://github.com/dselivanov/text2vec-cli">text2vec-cli</a>.</p>
+<p>Here is copy of README from <code>text2vec-cli</code>.</p>
+<p>If you are familiar with R language it is worth first to check <a href="https://github.com/dselivanov/text2vec">main text2vec repository</a>.</p>
+<p><code>text2vec-cli</code> made for those people who don’t know R, but want to try alternative implementation of the GloVe algorithm. Compared to <a href="https://github.com/stanfordnlp/GloVe">original</a> implemetation <code>text2vec</code> usually ~2 times faster. It is also can fit word embeddings model with <code>L1</code> regularization, which can be very useful for small datasets - algorithm can generalize much better than vanilla GloVe.</p>
+<p>One possible limitation of <code>text2vec</code> is that it calculates co-occurence statistics in RAM. This <strong>can be a problem for very large corpuses with very large vocabularies</strong>. For example you can process english wikipedia dump with vocabulary consisting of 400000 unique terms and window=10 on machine with 32gb of RAM.</p>
+<div id="installation" class="section level1">
+<h1>Installation</h1>
+<div id="r" class="section level2">
+<h2>R</h2>
+<p>You need R 3.2+ be installed - check <a href="https://cran.r-project.org/">CRAN</a> for instructions (should be very straightforward).</p>
+<p>For main linux distribultions it should be even simpler:</p>
+<div id="ubuntu" class="section level3">
+<h3>Ubuntu</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">sudo</span> apt-get install r-base r-base-dev</code></pre></div>
 </div>
-<div id="latent-dirichlet-allocation" class="section level1">
-<h1>Latent Dirichlet Allocation</h1>
-<p>TODO</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tokens =<span class="st"> </span>movie_review$review %&gt;%<span class="st"> </span>
-<span class="st">  </span>tolower %&gt;%<span class="st"> </span>
-<span class="st">  </span>word_tokenizer
-<span class="co"># turn off progressbar because it won&#39;t look nice in rmd</span>
-it =<span class="st"> </span><span class="kw">itoken</span>(tokens, <span class="dt">ids =</span> movie_review$id, <span class="dt">progressbar =</span> <span class="ot">FALSE</span>)
-v =<span class="st"> </span><span class="kw">create_vocabulary</span>(it) %&gt;%<span class="st"> </span>
-<span class="st">  </span><span class="kw">prune_vocabulary</span>(<span class="dt">term_count_min =</span> <span class="dv">10</span>, <span class="dt">doc_proportion_max =</span> <span class="fl">0.2</span>)
-vectorizer =<span class="st"> </span><span class="kw">vocab_vectorizer</span>(v)
-dtm =<span class="st"> </span><span class="kw">create_dtm</span>(it, vectorizer, <span class="dt">type =</span> <span class="st">&quot;lda_c&quot;</span>)
-
-lda_model =<span class="st"> </span>
-<span class="st">  </span>LDA$<span class="kw">new</span>(<span class="dt">n_topics =</span> <span class="dv">10</span>, <span class="dt">vocabulary =</span> v, 
-          <span class="dt">doc_topic_prior =</span> <span class="fl">0.1</span>, <span class="dt">topic_word_prior =</span> <span class="fl">0.01</span>)
-doc_topic_distr =<span class="st"> </span>
-<span class="st">  </span>lda_model$<span class="kw">fit_transform</span>(dtm, <span class="dt">n_iter =</span> <span class="dv">1000</span>, <span class="dt">convergence_tol =</span> <span class="fl">0.01</span>, 
-                          <span class="dt">check_convergence_every_n =</span> <span class="dv">10</span>)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lda_model$<span class="kw">plot</span>()</code></pre></div>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>
-LDAvis
-</title>
-<script src="topic_modeling_files/ldavis/d3.v3.js"></script>
-<script src="topic_modeling_files/ldavis/ldavis.js"></script>
-<link rel="stylesheet" type="text/css" href="topic_modeling_files/ldavis/lda.css">
-</head>
-<body>
-<div id="lda">
-
+<div id="centosfedorarhel" class="section level3">
+<h3>Centos/Fedora/RHEL</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">sudo</span> yum install R</code></pre></div>
 </div>
-<script>
-    var vis = new LDAvis("#lda", "topic_modeling_files/ldavis/lda.json");
-  </script>
-</body>
+</div>
+<div id="text2vec" class="section level2">
+<h2>text2vec</h2>
+<p>After R is installed clone this repo and make main scripts executable:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">git</span> clone https://github.com/dselivanov/text2vec-cli.git
+<span class="kw">cd</span> text2vec-cli
+<span class="co"># make scripts executable</span>
+<span class="kw">chmod</span> +x install.R vocabulary.R cooccurence.R glove.R analogy.R</code></pre></div>
+<p>And install text2vec with dependencies:</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./isntall.R</span></code></pre></div>
+</div>
+</div>
+<div id="usage" class="section level1">
+<h1>Usage</h1>
+<div id="shut-up-and-show-me-the-code" class="section level3">
+<h3>Shut up and show me the code</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">wget</span> http://mattmahoney.net/dc/text8.zip
+<span class="kw">./vocabulary.R</span> files=text8.zip vocab_file=vocab.rds
+<span class="kw">./cooccurence.R</span> files=text8.zip vocab_file=vocab.rds vocab_min_count=5 window_size=5 cooccurences_file=tcm.rds
+<span class="kw">./glove.R</span> cooccurences_file=tcm.rds word_vectors_size=50 iter=10 x_max=10 convergence_tol=0.01
+<span class="kw">./analogy.R</span></code></pre></div>
+</div>
+<div id="notes" class="section level2">
+<h2>Notes</h2>
+<p><code>text2vec-cli</code> is made for <strong>non-R</strong> users. We also assume that they are fluent in some another programming language and can preprocess input data using their favourite tools.</p>
+<p>Also in contrast to text2vec R packge which can use all cores for vocabulary creation and calculation of the co-occurence statistics, <code>text2vec-cli</code> is single threaded (but GloVe training uses all available threads).</p>
+</div>
+<div id="input-data" class="section level2">
+<h2>Input data</h2>
+<p>text2vec process data file by file. It <strong>read each file into RAM</strong>, process it and goes to next file. So if you text collection is in one large file (several gigs) we recommend to split it to chunks using standart unix <code>split</code> tool.</p>
+<p>Example: your data is in single <code>BIG_FILE.gz</code>. In the following line we are:</p>
+<ul>
+<li>unzipping it to stream and pass to pipe</li>
+<li>split stream by lines with a constraint that each chunk should not be more than 100mb</li>
+<li>pass each chunk to pipe, compress it back and save to disk</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">gunzip</span> -c BIG_FILE.gz <span class="kw">|</span> <span class="kw">split</span> --line-bytes=100m --filter=<span class="st">&#39;gzip --fast &gt; ./chunk_$FILE.gz&#39;</span></code></pre></div>
+<p>For OS X install <code>coreutils</code>: <code>brew install coreutils</code> and use <code>gsplit</code> instead of split.</p>
+<p>We assume:</p>
+<ol style="list-style-type: decimal">
+<li>documents already preprocessed (lowercase, stemming, collocations, etc. - whatever user wan’t).</li>
+<li>each line in input files = sentence/document</li>
+<li>words/tokens are space separated</li>
+<li>Files ending in .gz, .bz2, .xz, or .zip will be automatically uncompressed. Files starting with <a href="http://" class="uri">http://</a>, <a href="https://" class="uri">https://</a>, <a href="ftp://" class="uri">ftp://</a>, or ftps:// will be automatically downloaded. Remote gz files can also be automatically downloaded &amp; decompressed.</li>
+</ol>
+</div>
+<div id="training" class="section level2">
+<h2>Training</h2>
+<p>To fit GloVe model user need to go through following steps.</p>
+<div id="create-vocabulary" class="section level3">
+<h3>create vocabulary</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./vocabulary.R</span> files=text8.zip vocab_file=vocab.rds</code></pre></div>
+<p>Arguments:</p>
+<ol style="list-style-type: decimal">
+<li><code>files</code> - filenames of input files.multiple input files can be provided to <code>files</code> argument - use comma <code>,</code> to concatenate names: <code>files=file1,file2</code>.</li>
+<li><code>dir</code>. Also can pass <code>dir</code> argument- all files from dir will be used.</li>
+<li><code>vocab_file</code> - name of the output file</li>
+</ol>
+</div>
+<div id="create-co-occurence-statistics" class="section level3">
+<h3>create co-occurence statistics</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./cooccurence.R</span> files=text8.zip vocab_file=vocab.rds vocab_min_count=5 window_size=5 cooccurences_file=tcm.rds</code></pre></div>
+<p>Arguments:</p>
+<ol style="list-style-type: decimal">
+<li><code>files</code> - filenames of input files.multiple input files can be provided to <code>files</code> argument - use comma <code>,</code> to concatenate names: <code>files=file1,file2</code>.</li>
+<li><code>dir</code>. Also can pass <code>dir</code> argument- all files from dir will be used.</li>
+<li><code>vocab_file</code> - name of the vocabulary file</li>
+<li><code>vocab_min_count</code> - prune vocanulary and use words thar appeared at least <code>vocab_min_count</code> times.</li>
+<li><code>window_size</code> - how many neighbor words use for calculation of the co-occurence statistics</li>
+<li><code>cooccurences_file</code> - name of the output file</li>
+</ol>
+</div>
+<div id="train-glove-model" class="section level3">
+<h3>train GloVe model</h3>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./glove.R</span> cooccurences_file=tcm.rds word_vectors_size=50 iter=10 x_max=10 convergence_tol=0.01</code></pre></div>
+<p>Arguments:</p>
+<ol style="list-style-type: decimal">
+<li><code>cooccurences_file</code> - name of the output file</li>
+<li><code>word_vectors_size</code> - dimension of word embeddings</li>
+<li><code>iter</code> - maximum number of iterations of optimization algorithm</li>
+<li><code>x_max</code> - maximum value of co-occurence value. Corresponds to <code>X_MAX</code> in original implementation.</li>
+<li><code>convergence_tol</code> - <code>0.01</code> by default. Stop training if improvement between epochs less than convergence_tol.</li>
+<li><code>lambda</code> - L1 regularization coefficient. Ususally values from 1e-4 to 1e-5 are useful.</li>
+<li><code>learning_rate</code> - <code>0.2</code> by default. Initial rate for AdaGrad. Not recommended to change.</li>
+<li><code>clip_gradients</code> - <code>10</code> by default. Clip gradients with this value for numerical stability. Not recommended to change.</li>
+<li><code>alpha</code> - <code>0.75</code> by default.</li>
+</ol>
+</div>
+</div>
+<div id="check-accuracy-on-word-analogy-task" class="section level2">
+<h2>check accuracy on word-analogy task</h2>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./analogy.R</span></code></pre></div>
+</div>
 </div>
 
 
