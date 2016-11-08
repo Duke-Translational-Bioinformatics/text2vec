@@ -7,11 +7,9 @@ date: "`r Sys.Date()`"
 knitr::opts_chunk$set(echo=TRUE, eval=FALSE, warning=FALSE, message=FALSE)
 ```
 
-For non-R users we provide CLI (command line interface) - see separate repository - [text2vec-cli](https://github.com/dselivanov/text2vec-cli).
+For non-R users we provide CLI (command line interface) to GloVe algorithm. See separate repository - [text2vec-cli](https://github.com/dselivanov/text2vec-cli).
 
-Here is copy of README from `text2vec-cli`.
-
-If you are familiar with R language it is worth first to check [main text2vec repository](https://github.com/dselivanov/text2vec).
+Here is copy of README from `text2vec-cli`:
 
 `text2vec-cli` made for those people who don't know R, but want to try alternative implementation of the GloVe algorithm. Compared to [original](https://github.com/stanfordnlp/GloVe) implemetation `text2vec` usually ~2 times faster. It is also can fit word embeddings model with `L1` regularization, which can be very useful for small datasets - algorithm can generalize much better than vanilla GloVe. 
 
@@ -27,13 +25,23 @@ For main linux distribultions it should be even simpler:
 ### Ubuntu
 
 ```sh
-sudo apt-get install r-base r-base-dev
+# change following line accordingly to your system:
+# https://cran.r-project.org/bin/linux/ubuntu/
+# here is string for ubuntu 14.04
+echo 'deb https://cloud.r-project.org/bin/linux/ubuntu trusty/' | sudo tee --append /etc/apt/sources.list
+sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+sudo apt-key update
+# install dependencies
+sudo apt-get install -y libssl-dev libcurl4-openssl-dev git
+# isntall R
+sudo apt-get install -y r-base r-base-dev
 ```
 
 ### Centos/Fedora/RHEL
 
+Need something similar to instructions above. See how to install fresh R (3.2+) [here](https://cran.r-project.org/bin/linux/redhat/README).
 ```sh
-sudo yum install R
+sudo yum install openssl-devel libcurl-openssl-devel R
 ```
 
 ## text2vec
@@ -49,7 +57,7 @@ chmod +x install.R vocabulary.R cooccurence.R glove.R analogy.R
 
 And install text2vec with dependencies:
 ```sh
-./isntall.R
+./install.R
 ```
 
 # Usage
@@ -130,7 +138,7 @@ Arguments:
 
 Arguments: 
 
-1. `cooccurences_file` - name of the output file
+1. `cooccurences_file` - name of the file with co-occurence statistics
 1. `word_vectors_size` - dimension of word embeddings
 1. `iter` - maximum number of iterations of optimization algorithm
 1. `x_max` - maximum value of co-occurence value. Corresponds to `X_MAX` in original implementation.
