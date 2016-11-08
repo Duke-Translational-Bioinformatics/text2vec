@@ -11,7 +11,7 @@
 
 <meta name="author" content="Dmitriy Selivanov" />
 
-<meta name="date" content="2016-11-01" />
+<meta name="date" content="2016-11-08" />
 
 <title>GloVe Command Line Interface</title>
 
@@ -360,14 +360,13 @@ div.tocify {
 
 <h1 class="title toc-ignore">GloVe Command Line Interface</h1>
 <h4 class="author"><em>Dmitriy Selivanov</em></h4>
-<h4 class="date"><em>2016-11-01</em></h4>
+<h4 class="date"><em>2016-11-08</em></h4>
 
 </div>
 
 
-<p>For non-R users we provide CLI (command line interface) - see separate repository - <a href="https://github.com/dselivanov/text2vec-cli">text2vec-cli</a>.</p>
-<p>Here is copy of README from <code>text2vec-cli</code>.</p>
-<p>If you are familiar with R language it is worth first to check <a href="https://github.com/dselivanov/text2vec">main text2vec repository</a>.</p>
+<p>For non-R users we provide CLI (command line interface) to GloVe algorithm. See separate repository - <a href="https://github.com/dselivanov/text2vec-cli">text2vec-cli</a>.</p>
+<p>Here is copy of README from <code>text2vec-cli</code>:</p>
 <p><code>text2vec-cli</code> made for those people who don’t know R, but want to try alternative implementation of the GloVe algorithm. Compared to <a href="https://github.com/stanfordnlp/GloVe">original</a> implemetation <code>text2vec</code> usually ~2 times faster. It is also can fit word embeddings model with <code>L1</code> regularization, which can be very useful for small datasets - algorithm can generalize much better than vanilla GloVe.</p>
 <p>One possible limitation of <code>text2vec</code> is that it calculates co-occurence statistics in RAM. This <strong>can be a problem for very large corpuses with very large vocabularies</strong>. For example you can process english wikipedia dump with vocabulary consisting of 400000 unique terms and window=10 on machine with 32gb of RAM.</p>
 <div id="installation" class="section level1">
@@ -378,11 +377,21 @@ div.tocify {
 <p>For main linux distribultions it should be even simpler:</p>
 <div id="ubuntu" class="section level3">
 <h3>Ubuntu</h3>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">sudo</span> apt-get install r-base r-base-dev</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># change following line accordingly to your system:</span>
+<span class="co"># https://cran.r-project.org/bin/linux/ubuntu/</span>
+<span class="co"># here is string for ubuntu 14.04</span>
+<span class="kw">echo</span> <span class="st">&#39;deb https://cloud.r-project.org/bin/linux/ubuntu trusty/&#39;</span> <span class="kw">|</span> <span class="kw">sudo</span> tee --append /etc/apt/sources.list
+<span class="kw">sudo</span> apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
+<span class="kw">sudo</span> apt-key update
+<span class="co"># install dependencies</span>
+<span class="kw">sudo</span> apt-get install -y libssl-dev libcurl4-openssl-dev git
+<span class="co"># isntall R</span>
+<span class="kw">sudo</span> apt-get install -y r-base r-base-dev</code></pre></div>
 </div>
 <div id="centosfedorarhel" class="section level3">
 <h3>Centos/Fedora/RHEL</h3>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">sudo</span> yum install R</code></pre></div>
+<p>Need something similar to instructions above. See how to install fresh R (3.2+) <a href="https://cran.r-project.org/bin/linux/redhat/README">here</a>.</p>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">sudo</span> yum install openssl-devel libcurl-openssl-devel R</code></pre></div>
 </div>
 </div>
 <div id="text2vec" class="section level2">
@@ -393,7 +402,7 @@ div.tocify {
 <span class="co"># make scripts executable</span>
 <span class="kw">chmod</span> +x install.R vocabulary.R cooccurence.R glove.R analogy.R</code></pre></div>
 <p>And install text2vec with dependencies:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./isntall.R</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./install.R</span></code></pre></div>
 </div>
 </div>
 <div id="usage" class="section level1">
@@ -461,7 +470,7 @@ div.tocify {
 <div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="kw">./glove.R</span> cooccurences_file=tcm.rds word_vectors_size=50 iter=10 x_max=10 convergence_tol=0.01</code></pre></div>
 <p>Arguments:</p>
 <ol style="list-style-type: decimal">
-<li><code>cooccurences_file</code> - name of the output file</li>
+<li><code>cooccurences_file</code> - name of the file with co-occurence statistics</li>
 <li><code>word_vectors_size</code> - dimension of word embeddings</li>
 <li><code>iter</code> - maximum number of iterations of optimization algorithm</li>
 <li><code>x_max</code> - maximum value of co-occurence value. Corresponds to <code>X_MAX</code> in original implementation.</li>
